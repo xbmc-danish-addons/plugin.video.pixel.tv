@@ -1,3 +1,6 @@
+[B]Version 1.0.3 - 2011-12-22[/B]
+- Removed use of script.module.danishaddons
+
 [B]Version 1.0.2[/B]
 - Updated to danishaddons module 1.1.0
 
