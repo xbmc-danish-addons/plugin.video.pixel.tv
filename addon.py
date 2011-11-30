@@ -24,14 +24,13 @@ class PixelTVAddon(object):
                 'title' : title,
                 'plot' : description
             })
-            url = PATH + '?slug=' + slug
+            url = PATH + '?slug=' + slug + '&page=1'
             xbmcplugin.addDirectoryItem(HANDLE, url, item, True)
 
-#        xbmcplugin.setContent(HANDLE, 'tvshows')
         xbmcplugin.endOfDirectory(HANDLE)
 
     def showCategory(self, slug, page):
-        if page is None:
+        if page == 1:
             url = 'http://www.pixel.tv/programmer/%s/' % slug
         else:
             url = 'http://www.pixel.tv/programmer/%s/%s' % (slug, page)
@@ -46,20 +45,16 @@ class PixelTVAddon(object):
             title = m.group(3)
 
             item = xbmcgui.ListItem(title)
+            item.setProperty('IsPlayable', 'true')
             url = PATH + '?playlist=' + playlist
             xbmcplugin.addDirectoryItem(HANDLE, url, item)
 
-        if page is None:
-            page = 2
-        else:
-            page = int(page) + 1
-
+        page += 1
         if re.search('/programmer/%s/%d' % (slug, page), html):
-            item = xbmcgui.ListItem('Ældre indslag...')
+            item = xbmcgui.ListItem('XXXldre indslag...')
             url = PATH + '?slug=' + slug + '&page=' + str(page)
             xbmcplugin.addDirectoryItem(HANDLE, url, item, True)
 
-#        xbmcplugin.setContent(HANDLE, 'episodes')
         xbmcplugin.endOfDirectory(HANDLE)
 
 
@@ -68,21 +63,10 @@ class PixelTVAddon(object):
         html = u.read()
         u.close()
 
-        m = re.search('http://www.pixel.tv/embed/js/\?file=([0-9]+)&pid=([^&]+)&width=([0-9]+)', html)
-        file = m.group(1)
-        pid = m.group(2)
-        width = m.group(3)
-
-        u = urllib2.urlopen('http://www.pixel.tv/playlist/?file=%s_%s_%s' % (file, width, pid))
-        json = u.read()
-        u.close()
-
-        m = re.search("baseURL: '([^']+)'", json)
-        baseURL = m.group(1)
-        m = re.search("'(.*?\?tag=%s)'" % pid, json)
+        m = re.search('/([0-9]+/pixelV2)', html)
         path = m.group(1)
 
-        item = xbmcgui.ListItem(path = baseURL + '/' + path)
+        item = xbmcgui.ListItem(path = 'http://files.pixel.tv/video/' + path)
         xbmcplugin.setResolvedUrl(HANDLE, True, item)
 
 if __name__ == '__main__':
@@ -93,7 +77,7 @@ if __name__ == '__main__':
 
     ptv = PixelTVAddon()
     if PARAMS.has_key('slug'):
-        ptv.showCategory(PARAMS['slug'][0], PARAMS['page'][0])
+        ptv.showCategory(PARAMS['slug'][0], int(PARAMS['page'][0]))
     elif PARAMS.has_key('playlist'):
         ptv.playClip(PARAMS['playlist'][0])
     else:
