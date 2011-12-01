@@ -1,4 +1,5 @@
-[B]Version 1.0.3 - 2011-12-22[/B]
+[B]Version 2.0.0 - 2011-12-22[/B]
+- First version for XBMC eden
 - Removed use of script.module.danishaddons
 
 [B]Version 1.0.2[/B]

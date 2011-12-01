@@ -1,7 +1,8 @@
 import re
 import sys
-import cgi as urlparse
+import urlparse
 import urllib2
+import os
 
 import xbmcgui
 import xbmcplugin
@@ -22,8 +23,10 @@ class PixelTVAddon(object):
             item = xbmcgui.ListItem(title, iconImage=icon, thumbnailImage=icon)
             item.setInfo(type = 'video', infoLabels = {
                 'title' : title,
-                'plot' : description
+                'plot' : description,
+                'studio' : ADDON.getAddonInfo('name')
             })
+            item.setProperty('Fanart_Image', FANART)
             url = PATH + '?slug=' + slug + '&page=1'
             xbmcplugin.addDirectoryItem(HANDLE, url, item, True)
 
@@ -40,18 +43,23 @@ class PixelTVAddon(object):
         u.close()
 
         for m in re.finditer('<small>([^<]+)</small></td><td>.*?<a href="([^"]+)"><small>.*?</small>([^<]+)</a>', html):
-            #date = m.group(1)
             playlist = m.group(2)
             title = m.group(3)
 
-            item = xbmcgui.ListItem(title)
+            item = xbmcgui.ListItem(title, iconImage=ICON, thumbnailImage=ICON)
+            item.setInfo(type = 'video', infoLabels = {
+                'title' : title,
+                'studio' : ADDON.getAddonInfo('name')
+            })
             item.setProperty('IsPlayable', 'true')
+            item.setProperty('Fanart_Image', FANART)
             url = PATH + '?playlist=' + playlist
             xbmcplugin.addDirectoryItem(HANDLE, url, item)
 
         page += 1
         if re.search('/programmer/%s/%d' % (slug, page), html):
-            item = xbmcgui.ListItem('XXXldre indslag...')
+            item = xbmcgui.ListItem(ADDON.getLocalizedString(30000), iconImage=ICON, thumbnailImage=ICON)
+            item.setProperty('Fanart_Image', FANART)
             url = PATH + '?slug=' + slug + '&page=' + str(page)
             xbmcplugin.addDirectoryItem(HANDLE, url, item, True)
 
@@ -74,6 +82,9 @@ if __name__ == '__main__':
     PATH = sys.argv[0]
     HANDLE = int(sys.argv[1])
     PARAMS = urlparse.parse_qs(sys.argv[2][1:])
+
+    ICON = os.path.join(ADDON.getAddonInfo('path'), 'icon.png')
+    FANART = os.path.join(ADDON.getAddonInfo('path'), 'fanart.jpg')
 
     ptv = PixelTVAddon()
     if PARAMS.has_key('slug'):
