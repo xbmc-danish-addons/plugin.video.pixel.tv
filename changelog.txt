@@ -1,3 +1,7 @@
+[B]Version 3.0.0 - 2013-04-20[/B]
+- Complete rewrite due to site changes
+- Initial version for XBMC Frodo
+
 [B]Version 2.0.0 - 2011-12-22[/B]
 - First version for XBMC eden
 - Removed use of script.module.danishaddons
